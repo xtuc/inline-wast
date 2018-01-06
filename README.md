@@ -14,6 +14,8 @@ WAST is a superset of WATF (`.wat`) and is not part of the WebAssembly specifica
 ### Instructions
 
 ```js
+const {wastInstructions} = require("inline-wast");
+
 function add(a, b) {
   const fn = wastInstructions`
     (i32.const ${a})
@@ -30,6 +32,8 @@ console.log(add(1, 1)); // 2
 ### Function declaration
 
 ```js
+const {wast} = require("inline-wast");
+
 function add(a, b) {
   const exports = wast(`
     (func (export "add") (param i32) (param i32) (result i32)
