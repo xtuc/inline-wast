@@ -1,0 +1,37 @@
+{
+  "name": "inline-wast",
+  "version": "0.0.1",
+  "keywords": [
+    "webassembly",
+    "interpreter",
+    "javascript",
+    "watf",
+    "wat",
+    "wast",
+    "inline"
+  ],
+  "description": "Inline WebAssembly in your JavaScript",
+  "main": "lib/index.js",
+  "license": "GPL-2.0",
+  "scripts": {
+    "test": "make test",
+    "build": "make build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xtuc/inline-wast.git"
+  },
+  "author": "Sven Sauleau",
+  "dependencies": {
+    "webassembly-interpreter": "0.0.15"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.34",
+    "@babel/core": "^7.0.0-beta.34",
+    "@babel/preset-env": "^7.0.0-beta.34",
+    "@babel/preset-flow": "^7.0.0-beta.34",
+    "chai": "^4.1.2",
+    "flow-bin": "^0.62.0",
+    "mocha": "^4.1.0"
+  }
+}
