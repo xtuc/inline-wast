@@ -14,7 +14,7 @@ WAST is a superset of WATF (`.wat`) and is not part of the WebAssembly specifica
 ### Instructions
 
 ```js
-const {wastInstructions} = require("inline-wast");
+const {wastInstructions} = require('inline-wast/interpreter');
 
 function add(a, b) {
   const fn = wastInstructions`
@@ -32,11 +32,11 @@ console.log(add(1, 1)); // 2
 ### Function declaration
 
 ```js
-const {wast} = require("inline-wast");
+const {wast} = require('inline-wast/interpreter');
 
 function add(a, b) {
   const exports = wast(`
-    (func (export "add") (param i32) (param i32) (result i32)
+    (func (export 'add') (param i32) (param i32) (result i32)
       (get_local 0)
       (get_local 1)
       (i32.add)
@@ -48,3 +48,13 @@ function add(a, b) {
 
 console.log(add(1, 1)); // 2
 ```
+
+### Native
+
+If you want to use the native WebAssembly backend the usage remains the same, but you need to use:
+
+```js
+const {wastInstructions, wast} = require('inline-wast/native');
+```
+
+It's not recommended for now, the WAST to WASM conversion needs to be refactored.

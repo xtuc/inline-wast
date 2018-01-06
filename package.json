@@ -32,6 +32,7 @@
     "@babel/preset-flow": "^7.0.0-beta.34",
     "chai": "^4.1.2",
     "flow-bin": "^0.62.0",
-    "mocha": "^4.1.0"
+    "mocha": "^4.1.0",
+    "performance-now": "^2.1.0"
   }
 }

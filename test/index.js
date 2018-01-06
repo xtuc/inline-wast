@@ -1,56 +1,66 @@
 const {assert} = require('chai');
-const {wast, wastInstructions} = require('../lib');
+const interpreter = require('../lib/interpreter');
+const native = require('../lib/native');
 
-describe('wast instructions', () => {
+function test({wastInstructions, wast}) {
+  return function () {
 
-  it('should throw if not used with a template', () => {
-    const fn = () => wastInstructions('');
+    describe('wast instructions', () => {
 
-    assert.throws(fn);
-  });
+      it('should throw if not used with a template', () => {
+        const fn = () => wastInstructions('');
 
-  it('should throw if variable has an incorrect type', () => {
-    const fn1 = () => wastInstructions`${""}`;
-    const fn2 = () => wastInstructions`${() => {}}`;
+        assert.throws(fn);
+      });
 
-    assert.throws(fn1, TypeError);
-    assert.throws(fn2, TypeError);
-  });
+      it('should throw if variable has an incorrect type', () => {
+        const fn1 = () => wastInstructions`${""}`;
+        const fn2 = () => wastInstructions`${() => {}}`;
 
-  it('should pass variables', () => {
-    const v = 1;
+        assert.throws(fn1, TypeError);
+        assert.throws(fn2, TypeError);
+      });
 
-    const fn = wastInstructions`
-      (i32.const ${v})
-    `;
+      it('should pass variables', () => {
+        const v = 1;
 
-    assert.equal(fn(), 1);
-  });
+        const fn = wastInstructions`
+          (i32.const ${v})
+        `;
 
-});
+        assert.equal(fn(), 1);
+      });
 
-describe('wast', () => {
+    });
 
-  it('shoud export functions', () => {
-    const exports = wast(`
-      (func (export "a"))
-      (func (export "b"))
-    `);
+    describe('wast', () => {
 
-    assert.typeOf(exports.a, 'function');
-    assert.typeOf(exports.b, 'function');
-  });
+      it('shoud export functions', () => {
+        const exports = wast(`
+          (func (export "a"))
+          (func (export "b"))
+        `);
 
-  it('should pass arguments', () => {
-    const v = 1;
+        assert.typeOf(exports.a, 'function');
+        assert.typeOf(exports.b, 'function');
+      });
 
-    const exports = wast(`
-      (func (export "t") (param i32)
-        (get_local 0)
-      )
-    `);
+      it('should pass arguments', () => {
+        const v = 1;
 
-    assert.equal(exports.t(v), v)
-  });
+        const exports = wast(`
+          (func (export "t") (param i32) (result i32)
+            (get_local 0)
+          )
+        `);
 
-});
+        assert.equal(exports.t(v), v)
+      });
+
+    });
+
+  }
+}
+
+describe('interpreter', test(interpreter));
+describe('native', test(native));
