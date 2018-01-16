@@ -1,6 +1,6 @@
 const now = require('performance-now');
 const interpreter = require('../lib/interpreter');
-const native = require('../lib/native');
+const nativeWebAssembly = require('../lib/native');
 
 if (typeof WebAssembly === 'undefined') {
     console.log('WebAssembly not supported, skiping.');
@@ -24,33 +24,64 @@ function output(str) {
   process.stdout.write(str + '\n');
 }
 
+function createRNG(nbr) {
+  const numbers = [1, 2, 3, 4, 4, 5, 6, 7, 8, 9];
+  const entropy = [];
+
+  for (let i = 0; i < nbr; i++) {
+    const v = numbers[Math.floor(Math.random() * numbers.length)];
+    entropy.push(v);
+  }
+
+  return function get() {
+    if (entropy.length === 0) {
+      throw new Error("Entropy exhausted");
+    }
+
+    return entropy.pop();
+  };
+}
+
 function runBench(fn) {
+  const random = createRNG(NBINTERATION * 2)
 
   const t0 = now();
 
   for (let i = 0; i < NBINTERATION; i++) {
-    const l = Math.random() * 10 | 0;
-    const r = Math.random() * 10 | 0;
+    const l = random();
+    const r = random();
 
     fn(l, r);
   }
 
   const t1 = now();
 
+  output(fn.name);
+
   output('total ' + formatNumber(t1 - t0));
   output('mean ' + formatNumber((t1 - t0) / NBINTERATION));
 }
 
-runBench(function testNative(x, y) {
-  return x + y;
+/**
+ * Bench native JavaScript add
+ */
+
+runBench(function testNativeJS(l, r) {
+  return l + r;
 });
 
-runBench(function testWebAssembly(x, y) {
-  const fn = native.wastInstructions`
-    (i32.const ${x})
-    (i32.const ${y})
-    (i32.add)
-  `;
+/**
+ * Bench native WebAssembly
+ */
 
-  return fn(x, y);
+const nativeWebAssemblyExports = nativeWebAssembly.wast(`
+  (func (export "add") (param $l i32) (param $r i32) (result i32)
+    (get_local $l)
+    (get_local $r)
+    (i32.add)
+  )
+`);
+
+runBench(function testWebAssemblyFunc(x, y) {
+  return nativeWebAssemblyExports.add(x, y);
 });
