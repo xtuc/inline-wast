@@ -75,10 +75,10 @@ runBench(function testNativeJS(l, r) {
  */
 
 const nativeWebAssemblyExports = nativeWebAssembly.wast(`
-  (func (export "add") (param $l i32) (param $r i32) (result i32)
+  (func (export "add") (param $l f64) (param $r f64) (result f64)
     (get_local $l)
     (get_local $r)
-    (i32.add)
+    (f64.add)
   )
 `);
 
