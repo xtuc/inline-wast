@@ -36,9 +36,9 @@ const {wast} = require('inline-wast/lib/interpreter');
 
 function add(a, b) {
   const exports = wast(`
-    (func (export 'add') (param i32) (param i32) (result i32)
-      (get_local 0)
-      (get_local 1)
+    (func (export "add") (param $l i32) (param $r i32) (result i32)
+      (get_local $l)
+      (get_local $r)
       (i32.add)
     )
   `);

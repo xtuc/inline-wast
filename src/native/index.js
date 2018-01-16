@@ -2,9 +2,12 @@
 
 const libwabt = require('./libwabt');
 
-function run({buffer}) {
+const moduleInstanceCache = {};
+
+function getModuleInstance({buffer}) {
   const module = new WebAssembly.Module(buffer);
   const instance = new WebAssembly.Instance(module);
+
   return instance;
 }
 
@@ -14,18 +17,22 @@ function wastToWasm(script) {
 }
 
 function wast(string) {
-  const program = wastToWasm(`
-    (module ${string})
-  `);
 
+  if (typeof moduleInstanceCache[string] === 'undefined') {
 
-  program.resolveNames();
-  program.validate();
+    const program = wastToWasm(`
+      (module ${string})
+    `);
 
-  const binaryOutput = program.toBinary({log: true, write_debug_names:true});
+    program.resolveNames();
+    program.validate();
 
-  const instance = run(binaryOutput);
-  return instance.exports;
+    const binaryOutput = program.toBinary({log: true, write_debug_names:true});
+
+    moduleInstanceCache[string] = getModuleInstance(binaryOutput);
+  }
+
+  return moduleInstanceCache[string].exports;
 }
 
 function wastInstructions(strings, ...params) {

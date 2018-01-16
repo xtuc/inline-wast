@@ -2,13 +2,20 @@
 
 const {instantiateFromSource} = require('webassembly-interpreter');
 
-function wast(string) {
-  const program = (`
-    (module ${string})
-  `);
+const moduleInstanceCache = {};
 
-  const instance = instantiateFromSource(program);
-  return instance.exports;
+function wast(string) {
+
+  if (typeof moduleInstanceCache[string] === 'undefined') {
+
+    const program = (`
+      (module ${string})
+    `);
+
+    moduleInstanceCache[string] = instantiateFromSource(program);
+  }
+
+  return moduleInstanceCache[string].exports;
 }
 
 function wastInstructions(strings, ...params) {
